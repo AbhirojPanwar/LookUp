@@ -1,11 +1,15 @@
 package io.github.abhiroj.lookup;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import io.github.abhiroj.lookup.Service.ClipBoardWatcher;
+
+public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,12 +19,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Switch startService=(Switch) findViewById(R.id.switch_service);
         if(startService!=null)
         {
-            startService.setOnClickListener(this);
+            startService.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    launchorkillService(isChecked);
+                }
+            });
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        // TODO: Start Service
+    private void launchorkillService(boolean state) {
+        Intent intent=new Intent(MainActivity.this, ClipBoardWatcher.class);
+        if(state)
+        startService(intent);
+        else{
+            stopService(intent);
+        }
     }
+
+
 }
