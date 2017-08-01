@@ -7,7 +7,7 @@ The target of the android application is to remove the hassles of looking into a
 # Contribution
 If you are willing to, fork it, clone it and send a PR
 
-# Tos Used
+# Tools Used
 > Retrofit
 
 > Service API
