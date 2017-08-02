@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="text_margin">20dp</dimen>
+    <dimen name="close">20dp</dimen>
+    <dimen name="close_button_size">24dp</dimen>
+    <dimen name="icon_marginTop">10dp</dimen>
 </resources>
