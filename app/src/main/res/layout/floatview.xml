@@ -25,7 +25,7 @@
 
     </LinearLayout>
 
-    <TextView
+<!--    <TextView
         android:id="@+id/meaning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,7 +34,6 @@
         android:layout_marginLeft="@dimen/text_pad"
         android:background="@android:color/background_light"
         android:textColor="@android:color/black"
-        android:visibility="gone"
-        android:text="@string/placeholder"/>
+        />-->
 
 </LinearLayout>

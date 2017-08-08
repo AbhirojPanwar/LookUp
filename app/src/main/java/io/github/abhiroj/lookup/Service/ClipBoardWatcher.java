@@ -4,18 +4,23 @@ import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.util.AndroidException;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -28,6 +33,7 @@ public class ClipBoardWatcher extends Service {
 
     private WindowManager windowManager;
     private View view;
+    private TextView meaning;
 
     public static String LOG_TAG=ClipBoardWatcher.class.getSimpleName();
 
@@ -69,7 +75,6 @@ public class ClipBoardWatcher extends Service {
                 windowManager=(WindowManager) getSystemService(WINDOW_SERVICE);
                 windowManager.addView(view,params);
 
-                final TextView meaning=(TextView) view.findViewById(R.id.meaning);
                 final ImageView close=(ImageView) view.findViewById(R.id.close);
                 close.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -106,14 +111,16 @@ public class ClipBoardWatcher extends Service {
                                 {
                                     // TODO: Show the meaning of the word
                                     Log.d(LOG_TAG,"Here we need to show the meaning!");
-                                    if(meaning.getVisibility()==View.GONE){
-
-                                        meaning.setVisibility(View.VISIBLE);
+                                    LinearLayout linearLayout=(LinearLayout) view.getRootView();
+                                    if(meaning==null) {
+                                        linearLayout.addView(appendTextView("meaning of the text"));
+                                        params.x = 0;
+                                        params.y = 500;
                                     }
                                     else{
-                                        meaning.setVisibility(View.GONE);
+                                        destroyTextView();
                                     }
-
+                                    windowManager.updateViewLayout(view,params);
                                 }
                                 return true;
                             case MotionEvent.ACTION_MOVE:
@@ -159,5 +166,26 @@ public class ClipBoardWatcher extends Service {
         super.onDestroy();
         Log.d(LOG_TAG,"Getting off now!");
         ((ClipboardManager)getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(primaryClipChangedListener);
+    }
+
+    // create a new meaning object
+    public View appendTextView(String meaning) {
+        this.meaning=new TextView(view.getContext());
+        this.meaning.setText(meaning);
+        this.meaning.setTextColor(Color.BLACK);
+        this.meaning.setBackgroundColor(getResources().getColor(android.R.color.background_light));
+        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(20,0,0,0);
+        this.meaning.setPadding(20,20,20,20);
+        this.meaning.setLayoutParams(layoutParams);
+        return this.meaning;
+    }
+
+    // to destroy th
+    // e meaning
+    public void destroyTextView() {
+        LinearLayout linearLayout=(LinearLayout) view.getRootView();
+        linearLayout.removeView(meaning);
+        meaning=null;
     }
 }
