@@ -52,7 +52,7 @@ public class ClipBoardWatcher extends Service {
             ClipData clipData = clipboardManager.getPrimaryClip();
         if(clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))
         {
-            String text=clipData.getItemAt(0).getText().toString();
+            final String text=clipData.getItemAt(0).getText().toString().toLowerCase();
             if(isWord(text))
             {
                Log.d(LOG_TAG,text);
@@ -113,7 +113,7 @@ public class ClipBoardWatcher extends Service {
                                     Log.d(LOG_TAG,"Here we need to show the meaning!");
                                     LinearLayout linearLayout=(LinearLayout) view.getRootView();
                                     if(meaning==null) {
-                                        linearLayout.addView(appendTextView("meaning of the text"));
+                                        linearLayout.addView(appendTextView("meaning of the text chosen by user is "+ text));
                                         params.x = 0;
                                         params.y = 500;
                                     }
@@ -126,7 +126,7 @@ public class ClipBoardWatcher extends Service {
                             case MotionEvent.ACTION_MOVE:
                                 params.x = initX + (int) (event.getRawX() - initTouchX);
                                 params.y = initY + (int) (event.getRawY() - initTouchY);
-                                Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
+                                //Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
 
                                 windowManager.updateViewLayout(view,params);
                                 lastAction=MotionEvent.ACTION_MOVE;
@@ -136,6 +136,9 @@ public class ClipBoardWatcher extends Service {
                     }
                 });
 
+            }
+            else{
+                Log.d(LOG_TAG,"Not a valid word");
             }
         }
         }
@@ -174,9 +177,9 @@ public class ClipBoardWatcher extends Service {
         this.meaning.setText(meaning);
         this.meaning.setTextColor(Color.BLACK);
         this.meaning.setBackgroundColor(getResources().getColor(android.R.color.background_light));
-        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(20,0,0,0);
-        this.meaning.setPadding(20,20,20,20);
+        this.meaning.setPadding(40,40,40,40);
         this.meaning.setLayoutParams(layoutParams);
         return this.meaning;
     }
