@@ -15,6 +15,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import io.github.abhiroj.lookup.R;
 
@@ -65,6 +69,14 @@ public class ClipBoardWatcher extends Service {
                 windowManager=(WindowManager) getSystemService(WINDOW_SERVICE);
                 windowManager.addView(view,params);
 
+                final TextView meaning=(TextView) view.findViewById(R.id.meaning);
+                final ImageView close=(ImageView) view.findViewById(R.id.close);
+                close.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        windowManager.removeView(view);
+                    }
+                });
                 view.setOnTouchListener(new View.OnTouchListener() {
 
                     int lastAction;
@@ -94,6 +106,14 @@ public class ClipBoardWatcher extends Service {
                                 {
                                     // TODO: Show the meaning of the word
                                     Log.d(LOG_TAG,"Here we need to show the meaning!");
+                                    if(meaning.getVisibility()==View.GONE){
+
+                                        meaning.setVisibility(View.VISIBLE);
+                                    }
+                                    else{
+                                        meaning.setVisibility(View.GONE);
+                                    }
+
                                 }
                                 return true;
                             case MotionEvent.ACTION_MOVE:
@@ -108,8 +128,6 @@ public class ClipBoardWatcher extends Service {
                         return false;
                     }
                 });
-
-                // TODO: API Call
 
             }
         }

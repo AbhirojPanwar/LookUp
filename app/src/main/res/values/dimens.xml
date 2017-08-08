@@ -4,4 +4,5 @@
     <dimen name="close">20dp</dimen>
     <dimen name="close_button_size">24dp</dimen>
     <dimen name="icon_marginTop">10dp</dimen>
+    <dimen name="text_pad">20dp</dimen>
 </resources>
