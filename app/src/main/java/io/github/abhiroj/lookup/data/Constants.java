@@ -6,6 +6,7 @@ package io.github.abhiroj.lookup.data;
 
 public class Constants {
 
-    public static final String BASE_URL="http://api.pearson.com/v2/dictionaries/";
+    // URL to wordwise dictionary end point
+    public static final String BASE_URL="http://api.pearson.com/v2/dictionaries/laad3/";
 
 }

@@ -11,16 +11,14 @@ import java.util.List;
 public class Word {
 
 
+
     private List<Word> results;
+
+    private List<Senses> senses;
 
     private String headword;
 
     private String part_of_speech;
-
-    private String definiton;
-
-    @SerializedName("text")
-    private String example;
 
 
     public String getHeadword() {
@@ -31,22 +29,6 @@ public class Word {
         this.headword = headword;
     }
 
-
-    public String getDefiniton() {
-        return definiton;
-    }
-
-    public void setDefiniton(String definiton) {
-        this.definiton = definiton;
-    }
-
-    public String getExample() {
-        return example;
-    }
-
-    public void setExample(String example) {
-        this.example = example;
-    }
 
     public String getPart_of_speech() {
         return part_of_speech;
@@ -62,5 +44,55 @@ public class Word {
 
     public void setResults(List<Word> results) {
         this.results = results;
+    }
+
+    public List<Senses> getSenses() {
+        return senses;
+    }
+
+    public String getDefintion(Senses obj){
+        return obj.getDefinition();
+    }
+
+    public String getExample(Senses obj){
+        List<Examples> example=obj.getExamples();
+        return (example==null)?"":example.get(0).getText();
+    }
+
+    public void setSenses(List<Senses> senses) {
+        this.senses = senses;
+    }
+
+    public static class Senses{
+        private String definition;
+        private List<Examples> examples;
+
+        public String getDefinition() {
+            return definition;
+        }
+
+        public void setDefinition(String definition) {
+            this.definition = definition;
+        }
+
+        public List<Examples> getExamples() {
+            return examples;
+        }
+
+        public void setExamples(List<Examples> examples) {
+            this.examples = examples;
+        }
+    }
+
+    private static class Examples{
+        private String text;
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
     }
 }

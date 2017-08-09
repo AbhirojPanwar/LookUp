@@ -55,6 +55,7 @@ public class ClipBoardWatcher extends Service {
             processClip();
         }
     };
+    private WindowManager.LayoutParams params;
 
     private void processClip() {
         ClipboardManager clipboardManager=(ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -75,97 +76,106 @@ public class ClipBoardWatcher extends Service {
 
                 Call<Word> call=apiService.getWord(text);
 
-
+                // Create view upon receiving a valid response
                 call.enqueue(new Callback<Word>() {
                     @Override
                     public void onResponse(Call<Word> call, Response<Word> response) {
                         Log.d(LOG_TAG,"Response recieved "+response.toString()+" For call "+call.toString());
-                        Log.d(LOG_TAG,"Size of the reult is "+response.body().getResults().size());
+                        List<Word> result=response.body().getResults();
+                        Log.d(LOG_TAG,"Size of the reult is "+result.size());
+                        // Check if the word exists in dictionary
+                        if(result.size()>0) {
+                            final Word a = result.get(0);
+                            final Word.Senses obj=a.getSenses().get(0);
+                            Log.d(LOG_TAG, "Here we need to show the meaning!");
 
+                            view= LayoutInflater.from(ClipBoardWatcher.this).inflate(R.layout.floatview,null);
+                            //Add the view to the window.
+                            params = new WindowManager.LayoutParams(
+                                    WindowManager.LayoutParams.WRAP_CONTENT,
+                                    WindowManager.LayoutParams.WRAP_CONTENT,
+                                    0,
+                                    100,
+                                    WindowManager.LayoutParams.TYPE_PHONE,
+                                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                                    PixelFormat.TRANSLUCENT);
+
+                            params.gravity= Gravity.TOP | Gravity.LEFT;
+
+                            windowManager=(WindowManager) getSystemService(WINDOW_SERVICE);
+                            windowManager.addView(view,params);
+
+                            final ImageView close=(ImageView) view.findViewById(R.id.close);
+                            close.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(view!=null)
+                                    windowManager.removeView(view);
+                                }
+                            });
+                            view.setOnTouchListener(new View.OnTouchListener() {
+
+                                int lastAction;
+                                int initX;
+                                int initY;
+                                float initTouchX;
+                                float initTouchY;
+
+
+                                @Override
+                                public boolean onTouch(View v, MotionEvent event) {
+
+                                    switch(event.getAction())
+                                    {
+                                        case MotionEvent.ACTION_DOWN:
+
+                                            initX=params.x;
+                                            initY=params.y;
+
+                                            initTouchX= event.getRawX();
+                                            initTouchY=event.getRawY();
+
+                                            lastAction=MotionEvent.ACTION_DOWN;
+                                            return true;
+                                        case MotionEvent.ACTION_UP:
+                                            if(lastAction==MotionEvent.ACTION_DOWN)
+                                            {
+
+                                                LinearLayout linearLayout = (LinearLayout) view.getRootView();
+                                                if (meaning == null) {
+                                                    StringBuilder builder = new StringBuilder();
+
+                                                    builder.append(a.getHeadword() + "\n" + a.getDefintion(obj) + "\n" + a.getExample(obj) + "\n" + a.getPart_of_speech());
+                                                    linearLayout.addView(appendTextView(builder.toString()));
+                                                    params.x = 0;
+                                                    params.y = 500;
+                                                } else {
+                                                    destroyTextView();
+                                                }
+                                                windowManager.updateViewLayout(view, params);
+
+                                            }
+                                            return true;
+                                        case MotionEvent.ACTION_MOVE:
+                                            params.x = initX + (int) (event.getRawX() - initTouchX);
+                                            params.y = initY + (int) (event.getRawY() - initTouchY);
+                                            //Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
+
+                                            windowManager.updateViewLayout(view,params);
+                                            lastAction=MotionEvent.ACTION_MOVE;
+                                            return true;
+                                    }
+                                    return false;
+                                }
+                            });
+
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Word> call, Throwable t) {
                         Log.d(LOG_TAG,"Failure recieved "+t.toString()+" For call "+call.toString());
 
-                    }
-                });
-
-
-                view= LayoutInflater.from(this).inflate(R.layout.floatview,null);
-                //Add the view to the window.
-                final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        0,
-                        100,
-                        WindowManager.LayoutParams.TYPE_PHONE,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                        PixelFormat.TRANSLUCENT);
-
-                params.gravity= Gravity.TOP | Gravity.LEFT;
-
-                windowManager=(WindowManager) getSystemService(WINDOW_SERVICE);
-                windowManager.addView(view,params);
-
-                final ImageView close=(ImageView) view.findViewById(R.id.close);
-                close.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        windowManager.removeView(view);
-                    }
-                });
-                view.setOnTouchListener(new View.OnTouchListener() {
-
-                    int lastAction;
-                    int initX;
-                    int initY;
-                    float initTouchX;
-                    float initTouchY;
-
-
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-
-                        switch(event.getAction())
-                        {
-                            case MotionEvent.ACTION_DOWN:
-
-                                initX=params.x;
-                                initY=params.y;
-
-                                initTouchX= event.getRawX();
-                                initTouchY=event.getRawY();
-
-                                lastAction=MotionEvent.ACTION_DOWN;
-                            return true;
-                            case MotionEvent.ACTION_UP:
-                                if(lastAction==MotionEvent.ACTION_DOWN)
-                                {
-                                    // TODO: Show the meaning of the word
-                                    Log.d(LOG_TAG,"Here we need to show the meaning!");
-                                    LinearLayout linearLayout=(LinearLayout) view.getRootView();
-                                    if(meaning==null) {
-                                        linearLayout.addView(appendTextView("meaning of the text chosen by user is "+ text));
-                                        params.x = 0;
-                                        params.y = 500;
-                                    }
-                                    else{
-                                        destroyTextView();
-                                    }
-                                    windowManager.updateViewLayout(view,params);
-                                }
-                                return true;
-                            case MotionEvent.ACTION_MOVE:
-                                params.x = initX + (int) (event.getRawX() - initTouchX);
-                                params.y = initY + (int) (event.getRawY() - initTouchY);
-                                //Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
-
-                                windowManager.updateViewLayout(view,params);
-                                lastAction=MotionEvent.ACTION_MOVE;
-                                return true;
-                        }
-                        return false;
                     }
                 });
 
