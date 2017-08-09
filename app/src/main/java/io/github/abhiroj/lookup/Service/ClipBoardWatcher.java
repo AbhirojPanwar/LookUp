@@ -64,120 +64,117 @@ public class ClipBoardWatcher extends Service {
             ClipData clipData = clipboardManager.getPrimaryClip();
         if(clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))
         {
-            final String text=clipData.getItemAt(0).getText().toString().toLowerCase();
-            if(isWord(text))
-            {
-               Log.d(LOG_TAG,text);
-                Log.d(LOG_TAG,"Ready for the overlay!");
+            Log.d(LOG_TAG, String.valueOf(clipData.getItemAt(0).getText()));
+            CharSequence text1=clipData.getItemAt(0).getText();
+            if(text1!=null) {
+                final String text = text1.toString().toLowerCase();
+                if (isWord(text)) {
+                    Log.d(LOG_TAG, text);
+                    Log.d(LOG_TAG, "Ready for the overlay!");
 
 
+                    APIService apiService = getRetrofit().create(APIService.class);
 
-                APIService apiService=getRetrofit().create(APIService.class);
+                    Call<Word> call = apiService.getWord(text);
 
-                Call<Word> call=apiService.getWord(text);
-
-                // Create view upon receiving a valid response
-                call.enqueue(new Callback<Word>() {
-                    @Override
-                    public void onResponse(Call<Word> call, Response<Word> response) {
-                        Log.d(LOG_TAG,"Response recieved "+response.toString()+" For call "+call.toString());
-                        List<Word> result=response.body().getResults();
-                        Log.d(LOG_TAG,"Size of the reult is "+result.size());
-                        // Check if the word exists in dictionary
-                        if(result.size()>0) {
-                            final Word a = result.get(0);
-                            final Word.Senses obj=a.getSenses().get(0);
-                            Log.d(LOG_TAG, "Here we need to show the meaning!");
+                    // Create view upon receiving a valid response
+                    call.enqueue(new Callback<Word>() {
+                        @Override
+                        public void onResponse(Call<Word> call, Response<Word> response) {
+                            Log.d(LOG_TAG, "Response recieved " + response.toString() + " For call " + call.toString());
+                            List<Word> result = response.body().getResults();
+                            Log.d(LOG_TAG, "Size of the reult is " + result.size());
+                            // Check if the word exists in dictionary
+                            if (result.size() > 0) {
+                                final Word a = result.get(0);
+                                final Word.Senses obj = a.getSenses().get(0);
+                                Log.d(LOG_TAG, "Here we need to show the meaning!");
 
 
-                            windowManager=getWindowmanager();
-                            if(view!=null) {
-                                windowManager.updateViewLayout(view, params);
-                                destroyTextView();
-                            }
-                            else
-                            {
-                                view= getView();
-                                params = getlayoutParamsForRemoteView();
-                                windowManager.addView(view,params);
-                            }
-
-                            final ImageView close=(ImageView) view.findViewById(R.id.close);
-                            close.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    destroyFloatView();
+                                windowManager = getWindowmanager();
+                                if (view != null) {
+                                    windowManager.updateViewLayout(view, params);
+                                    destroyTextView();
+                                } else {
+                                    view = getView();
+                                    params = getlayoutParamsForRemoteView();
+                                    windowManager.addView(view, params);
                                 }
-                            });
-                            view.setOnTouchListener(new View.OnTouchListener() {
 
-                                int lastAction;
-                                int initX;
-                                int initY;
-                                float initTouchX;
-                                float initTouchY;
-
-
-                                @Override
-                                public boolean onTouch(View v, MotionEvent event) {
-
-                                    switch(event.getAction())
-                                    {
-                                        case MotionEvent.ACTION_DOWN:
-
-                                            initX=params.x;
-                                            initY=params.y;
-
-                                            initTouchX= event.getRawX();
-                                            initTouchY=event.getRawY();
-
-                                            lastAction=MotionEvent.ACTION_DOWN;
-                                            return true;
-                                        case MotionEvent.ACTION_UP:
-                                            if(lastAction==MotionEvent.ACTION_DOWN)
-                                            {
-
-                                                LinearLayout linearLayout = (LinearLayout) view.getRootView();
-                                                if (meaning == null) {
-                                                    StringBuilder builder = new StringBuilder();
-
-                                                    builder.append(a.getHeadword() + "\n" + a.getDefintion(obj) + "\n" + a.getExample(obj) + "\n" + a.getPart_of_speech());
-                                                    linearLayout.addView(appendTextView(builder.toString()));
-                                                    params.x = 0;
-                                                    params.y = 500;
-                                                } else {
-                                                    destroyTextView();
-                                                }
-                                                windowManager.updateViewLayout(view, params);
-
-                                            }
-                                            return true;
-                                        case MotionEvent.ACTION_MOVE:
-                                            params.x = initX + (int) (event.getRawX() - initTouchX);
-                                            params.y = initY + (int) (event.getRawY() - initTouchY);
-                                            //Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
-
-                                            windowManager.updateViewLayout(view,params);
-                                            lastAction=MotionEvent.ACTION_MOVE;
-                                            return true;
+                                final ImageView close = (ImageView) view.findViewById(R.id.close);
+                                close.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        destroyFloatView();
                                     }
-                                    return false;
-                                }
-                            });
+                                });
+                                view.setOnTouchListener(new View.OnTouchListener() {
+
+                                    int lastAction;
+                                    int initX;
+                                    int initY;
+                                    float initTouchX;
+                                    float initTouchY;
+
+
+                                    @Override
+                                    public boolean onTouch(View v, MotionEvent event) {
+
+                                        switch (event.getAction()) {
+                                            case MotionEvent.ACTION_DOWN:
+
+                                                initX = params.x;
+                                                initY = params.y;
+
+                                                initTouchX = event.getRawX();
+                                                initTouchY = event.getRawY();
+
+                                                lastAction = MotionEvent.ACTION_DOWN;
+                                                return true;
+                                            case MotionEvent.ACTION_UP:
+                                                if (lastAction == MotionEvent.ACTION_DOWN) {
+
+                                                    LinearLayout linearLayout = (LinearLayout) view.getRootView();
+                                                    if (meaning == null) {
+                                                        StringBuilder builder = new StringBuilder();
+
+                                                        builder.append(a.getHeadword() + "\n" + a.getDefintion(obj) + "\n" + a.getExample(obj) + "\n" + a.getPart_of_speech());
+                                                        linearLayout.addView(appendTextView(builder.toString()));
+                                                        params.x = 0;
+                                                        params.y = 500;
+                                                    } else {
+                                                        destroyTextView();
+                                                    }
+                                                    windowManager.updateViewLayout(view, params);
+
+                                                }
+                                                return true;
+                                            case MotionEvent.ACTION_MOVE:
+                                                params.x = initX + (int) (event.getRawX() - initTouchX);
+                                                params.y = initY + (int) (event.getRawY() - initTouchY);
+                                                //Log.d(LOG_TAG,"Update X "+params.x+" Update Y "+params.y);
+
+                                                windowManager.updateViewLayout(view, params);
+                                                lastAction = MotionEvent.ACTION_MOVE;
+                                                return true;
+                                        }
+                                        return false;
+                                    }
+                                });
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Word> call, Throwable t) {
+                            Log.d(LOG_TAG, "Failure recieved " + t.toString() + " For call " + call.toString());
 
                         }
-                    }
+                    });
 
-                    @Override
-                    public void onFailure(Call<Word> call, Throwable t) {
-                        Log.d(LOG_TAG,"Failure recieved "+t.toString()+" For call "+call.toString());
-
-                    }
-                });
-
-            }
-            else{
-                Log.d(LOG_TAG,"Not a valid word");
+                } else {
+                    Log.d(LOG_TAG, "Not a valid word");
+                }
             }
         }
         }
