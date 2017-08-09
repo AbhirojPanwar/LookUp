@@ -25,8 +25,19 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
-import io.github.abhiroj.lookup.R;
+import java.util.List;
 
+import io.github.abhiroj.lookup.R;
+import io.github.abhiroj.lookup.data.APIService;
+import io.github.abhiroj.lookup.data.Constants;
+import io.github.abhiroj.lookup.model.Word;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static io.github.abhiroj.lookup.Service.ApiClient.getRetrofit;
 import static io.github.abhiroj.lookup.Utils.Utility.isWord;
 
 public class ClipBoardWatcher extends Service {
@@ -57,6 +68,28 @@ public class ClipBoardWatcher extends Service {
             {
                Log.d(LOG_TAG,text);
                 Log.d(LOG_TAG,"Ready for the overlay!");
+
+
+
+                APIService apiService=getRetrofit().create(APIService.class);
+
+                Call<Word> call=apiService.getWord(text);
+
+
+                call.enqueue(new Callback<Word>() {
+                    @Override
+                    public void onResponse(Call<Word> call, Response<Word> response) {
+                        Log.d(LOG_TAG,"Response recieved "+response.toString()+" For call "+call.toString());
+                        Log.d(LOG_TAG,"Size of the reult is "+response.body().getResults().size());
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Word> call, Throwable t) {
+                        Log.d(LOG_TAG,"Failure recieved "+t.toString()+" For call "+call.toString());
+
+                    }
+                });
 
 
                 view= LayoutInflater.from(this).inflate(R.layout.floatview,null);
