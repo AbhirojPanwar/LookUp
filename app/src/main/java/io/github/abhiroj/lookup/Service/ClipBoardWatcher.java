@@ -89,28 +89,24 @@ public class ClipBoardWatcher extends Service {
                             final Word.Senses obj=a.getSenses().get(0);
                             Log.d(LOG_TAG, "Here we need to show the meaning!");
 
-                            view= LayoutInflater.from(ClipBoardWatcher.this).inflate(R.layout.floatview,null);
-                            //Add the view to the window.
-                            params = new WindowManager.LayoutParams(
-                                    WindowManager.LayoutParams.WRAP_CONTENT,
-                                    WindowManager.LayoutParams.WRAP_CONTENT,
-                                    0,
-                                    100,
-                                    WindowManager.LayoutParams.TYPE_PHONE,
-                                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                                    PixelFormat.TRANSLUCENT);
 
-                            params.gravity= Gravity.TOP | Gravity.LEFT;
-
-                            windowManager=(WindowManager) getSystemService(WINDOW_SERVICE);
-                            windowManager.addView(view,params);
+                            windowManager=getWindowmanager();
+                            if(view!=null) {
+                                windowManager.updateViewLayout(view, params);
+                                destroyTextView();
+                            }
+                            else
+                            {
+                                view= getView();
+                                params = getlayoutParamsForRemoteView();
+                                windowManager.addView(view,params);
+                            }
 
                             final ImageView close=(ImageView) view.findViewById(R.id.close);
                             close.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    if(view!=null)
-                                    windowManager.removeView(view);
+                                    destroyFloatView();
                                 }
                             });
                             view.setOnTouchListener(new View.OnTouchListener() {
@@ -187,6 +183,47 @@ public class ClipBoardWatcher extends Service {
         }
 
     }
+
+    private void destroyFloatView() {
+        if(view!=null) {
+            windowManager.removeView(view);
+            view=null;
+            params = null;
+            windowManager = null;
+        }
+    }
+
+    private WindowManager getWindowmanager() {
+        if(windowManager==null)
+       return (WindowManager) getSystemService(WINDOW_SERVICE);
+    return windowManager;
+    }
+
+    private WindowManager.LayoutParams getlayoutParamsForRemoteView() {
+    if(params==null)
+    {
+       WindowManager.LayoutParams params=new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                0,
+                100,
+                WindowManager.LayoutParams.TYPE_PHONE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                PixelFormat.TRANSLUCENT);
+
+        params.gravity= Gravity.TOP | Gravity.LEFT;
+        return params;
+    }
+        return params;
+    }
+
+    private View getView() {
+        if(view==null)
+        {
+            return LayoutInflater.from(ClipBoardWatcher.this).inflate(R.layout.floatview,null);
+        }
+        return view;
+        }
 
     public ClipBoardWatcher() {
     }
