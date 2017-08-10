@@ -251,28 +251,29 @@ public class ClipBoardWatcher extends Service {
         LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(20,0,0,0);
         LinearLayout verticalParent=new LinearLayout(view.getContext());
-        verticalParent.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+        verticalParent.setBackgroundColor(Color.parseColor("#80000000"));
         verticalParent.setOrientation(LinearLayout.VERTICAL);
         verticalParent.setLayoutParams(layoutParams);
         TextView hw=new TextView(view.getContext());
         hw.setTextColor(getResources().getColor(android.R.color.background_light));
         hw.setText(headword+" "+completeString(pos));
-        hw.setPadding(20,20,20,20);
+        hw.setPadding(20,20,20,10);
         verticalParent.addView(hw,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView definition=new TextView(view.getContext());
         definition.setText(defintion);
-        definition.setPadding(20,20,20,20);
+        definition.setPadding(20,10,20,10);
         definition.setTextColor(getResources().getColor(android.R.color.background_light));
+        verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView eg=new TextView(view.getContext());
         eg.setText("Eg. -> "+example);
-        eg.setPadding(20,20,20,20);
+        eg.setPadding(20,10,20,10);
         eg.setTextColor(getResources().getColor(android.R.color.background_light));
-
-        verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        verticalParent.addView(eg,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        return verticalParent;
+        if(example.length()>0) {
+            verticalParent.addView(eg, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+            return verticalParent;
     }
 
     private String completeString(String pos) {
