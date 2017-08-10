@@ -254,25 +254,11 @@ public class ClipBoardWatcher extends Service {
         verticalParent.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
         verticalParent.setOrientation(LinearLayout.VERTICAL);
         verticalParent.setLayoutParams(layoutParams);
-        LinearLayout.LayoutParams horizontalChildParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        LinearLayout horizontalChild=new LinearLayout(getBaseContext());
-        horizontalChild.setOrientation(LinearLayout.HORIZONTAL);
-        horizontalChild.setLayoutParams(horizontalChildParams);
-        LinearLayout.LayoutParams textViews=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        textViews.weight=1.0f;
         TextView hw=new TextView(view.getContext());
         hw.setTextColor(getResources().getColor(android.R.color.background_light));
-        hw.setText(headword);
-        hw.setLayoutParams(textViews);
+        hw.setText(headword+" "+completeString(pos));
         hw.setPadding(20,20,20,20);
-        TextView POS=new TextView(view.getContext());
-        POS.setText(pos);
-        POS.setPadding(20,20,20,20);
-        POS.setLayoutParams(textViews);
-        POS.setTextColor(getResources().getColor(android.R.color.background_light));
-        horizontalChild.addView(hw);
-        horizontalChild.addView(POS);
-        verticalParent.addView(horizontalChild);
+        verticalParent.addView(hw,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView definition=new TextView(view.getContext());
         definition.setText(defintion);
@@ -287,6 +273,15 @@ public class ClipBoardWatcher extends Service {
         verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         verticalParent.addView(eg,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return verticalParent;
+    }
+
+    private String completeString(String pos) {
+    char c=pos.charAt(0);
+        if(c=='a' || c=='e' || c=='i' || c=='o' || c=='u')
+        {
+            return "is an "+pos;
+        }
+        return "is a "+pos;
     }
 
 
