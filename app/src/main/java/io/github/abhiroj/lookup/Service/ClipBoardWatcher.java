@@ -44,7 +44,6 @@ public class ClipBoardWatcher extends Service {
 
     private WindowManager windowManager;
     private View view;
-    private TextView meaning;
 
     public static String LOG_TAG=ClipBoardWatcher.class.getSimpleName();
 
@@ -56,6 +55,7 @@ public class ClipBoardWatcher extends Service {
         }
     };
     private WindowManager.LayoutParams params;
+    private View meaning;
 
     private void processClip() {
         ClipboardManager clipboardManager=(ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -136,10 +136,8 @@ public class ClipBoardWatcher extends Service {
 
                                                     LinearLayout linearLayout = (LinearLayout) view.getRootView();
                                                     if (meaning == null) {
-                                                        StringBuilder builder = new StringBuilder();
-
-                                                        builder.append(a.getHeadword() + "\n" + a.getDefintion(obj) + "\n" + a.getExample(obj) + "\n" + a.getPart_of_speech());
-                                                        linearLayout.addView(appendTextView(builder.toString()));
+                                                        meaning=appendTextView(a.getHeadword(),a.getDefintion(obj), a.getExample(obj),a.getPart_of_speech());
+                                                        linearLayout.addView(meaning);
                                                         params.x = 0;
                                                         params.y = 500;
                                                     } else {
@@ -249,17 +247,48 @@ public class ClipBoardWatcher extends Service {
     }
 
     // create a new meaning object
-    public View appendTextView(String meaning) {
-        this.meaning=new TextView(view.getContext());
-        this.meaning.setText(meaning);
-        this.meaning.setTextColor(Color.BLACK);
-        this.meaning.setBackgroundColor(getResources().getColor(android.R.color.background_light));
+    public View appendTextView(String headword, String defintion, String example, String pos) {
         LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(20,0,0,0);
-        this.meaning.setPadding(40,40,40,40);
-        this.meaning.setLayoutParams(layoutParams);
-        return this.meaning;
+        LinearLayout verticalParent=new LinearLayout(view.getContext());
+        verticalParent.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+        verticalParent.setOrientation(LinearLayout.VERTICAL);
+        verticalParent.setLayoutParams(layoutParams);
+        LinearLayout.LayoutParams horizontalChildParams=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout horizontalChild=new LinearLayout(getBaseContext());
+        horizontalChild.setOrientation(LinearLayout.HORIZONTAL);
+        horizontalChild.setLayoutParams(horizontalChildParams);
+        LinearLayout.LayoutParams textViews=new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        textViews.weight=1.0f;
+        TextView hw=new TextView(view.getContext());
+        hw.setTextColor(getResources().getColor(android.R.color.background_light));
+        hw.setText(headword);
+        hw.setLayoutParams(textViews);
+        hw.setPadding(20,20,20,20);
+        TextView POS=new TextView(view.getContext());
+        POS.setText(pos);
+        POS.setPadding(20,20,20,20);
+        POS.setLayoutParams(textViews);
+        POS.setTextColor(getResources().getColor(android.R.color.background_light));
+        horizontalChild.addView(hw);
+        horizontalChild.addView(POS);
+        verticalParent.addView(horizontalChild);
+
+        TextView definition=new TextView(view.getContext());
+        definition.setText(defintion);
+        definition.setPadding(20,20,20,20);
+        definition.setTextColor(getResources().getColor(android.R.color.background_light));
+
+        TextView eg=new TextView(view.getContext());
+        eg.setText("Eg. -> "+defintion);
+        eg.setPadding(20,20,20,20);
+        eg.setTextColor(getResources().getColor(android.R.color.background_light));
+
+        verticalParent.addView(definition);
+        verticalParent.addView(eg);
+        return verticalParent;
     }
+
 
     // to destroy th
     // e meaning
