@@ -280,12 +280,12 @@ public class ClipBoardWatcher extends Service {
         definition.setTextColor(getResources().getColor(android.R.color.background_light));
 
         TextView eg=new TextView(view.getContext());
-        eg.setText("Eg. -> "+defintion);
+        eg.setText("Eg. -> "+example);
         eg.setPadding(20,20,20,20);
         eg.setTextColor(getResources().getColor(android.R.color.background_light));
 
-        verticalParent.addView(definition);
-        verticalParent.addView(eg);
+        verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        verticalParent.addView(eg,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return verticalParent;
     }
 
