@@ -54,7 +54,18 @@ public class ClipBoardWatcher extends Service {
         @Override
         public void onPrimaryClipChanged() {
            Log.d(LOG_TAG,"Primary Clip Response Changed");
-            processClip();
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+                if(Settings.canDrawOverlays(getApplicationContext()))
+                {
+                  processClip();
+                }
+                else{
+                 //TODO: send an intent with the action ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
+                }
+            }
+            else {
+                processClip();
+            }
         }
     };
     private WindowManager.LayoutParams params;
