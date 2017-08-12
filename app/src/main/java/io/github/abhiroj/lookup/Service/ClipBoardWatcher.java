@@ -60,7 +60,7 @@ public class ClipBoardWatcher extends Service {
                   processClip();
                 }
                 else{
-                 //TODO: send an intent with the action ACTION_MANAGE_OVERLAY_PERMISSION, which causes the system to display a permission management screen.
+                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
                 }
             }
             else {
