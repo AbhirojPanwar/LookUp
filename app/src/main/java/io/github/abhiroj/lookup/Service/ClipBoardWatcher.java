@@ -276,7 +276,7 @@ public class ClipBoardWatcher extends Service {
         verticalParent.setLayoutParams(layoutParams);
         TextView hw=new TextView(view.getContext());
         hw.setTextColor(getResources().getColor(android.R.color.background_light));
-        hw.setText(headword+" "+completeString(pos)+".");
+        hw.setText(headword+" "+completeString(pos));
         hw.setPadding(20,20,20,10);
         verticalParent.addView(hw,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -287,7 +287,7 @@ public class ClipBoardWatcher extends Service {
         verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView eg=new TextView(view.getContext());
-        eg.setText("Eg.: "+example+".");
+        eg.setText("Eg.: "+example  );
         eg.setPadding(20,10,20,10);
         eg.setTextColor(getResources().getColor(android.R.color.background_light));
         if(example.length()>0) {
@@ -304,10 +304,9 @@ public class ClipBoardWatcher extends Service {
         }
         return "is a "+pos+".";
     }
+    
 
-
-    // to destroy th
-    // e meaning
+    // to destroy the meaning
     public void destroyTextView() {
         LinearLayout linearLayout=(LinearLayout) view.getRootView();
         linearLayout.removeView(meaning);
