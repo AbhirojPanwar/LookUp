@@ -3,4 +3,5 @@
     <string name="service_name">LookItUp Service</string>
     <string name="start">Start Service</string>
     <string name="placeholder">meaning of the text goes here</string>
+    <string name="service_on">Dictionary service is on.</string>
 </resources>

@@ -6,11 +6,13 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.IntDef;
 import android.util.AndroidException;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,6 +47,7 @@ public class ClipBoardWatcher extends Service {
     private WindowManager windowManager;
     private View view;
 
+
     public static String LOG_TAG=ClipBoardWatcher.class.getSimpleName();
 
     ClipboardManager.OnPrimaryClipChangedListener primaryClipChangedListener=new ClipboardManager.OnPrimaryClipChangedListener() {
@@ -56,6 +59,7 @@ public class ClipBoardWatcher extends Service {
     };
     private WindowManager.LayoutParams params;
     private View meaning;
+    private SharedPreferences preferences;
 
     private void processClip() {
         ClipboardManager clipboardManager=(ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -237,6 +241,9 @@ public class ClipBoardWatcher extends Service {
         super.onStart(intent, startId);
         Log.d(LOG_TAG,"Getting on now!");
         ((ClipboardManager)getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(primaryClipChangedListener);
+        preferences = getSharedPreferences(Constants.FILE, Context.MODE_PRIVATE);
+        preferences.edit().putBoolean(Constants.KEY,true).apply();
+
     }
 
     @Override
@@ -244,6 +251,8 @@ public class ClipBoardWatcher extends Service {
         super.onDestroy();
         Log.d(LOG_TAG,"Getting off now!");
         ((ClipboardManager)getSystemService(CLIPBOARD_SERVICE)).removePrimaryClipChangedListener(primaryClipChangedListener);
+        preferences = getSharedPreferences(Constants.FILE, Context.MODE_PRIVATE);
+        preferences.edit().putBoolean(Constants.KEY,false).apply();
     }
 
     // create a new meaning object
@@ -256,7 +265,7 @@ public class ClipBoardWatcher extends Service {
         verticalParent.setLayoutParams(layoutParams);
         TextView hw=new TextView(view.getContext());
         hw.setTextColor(getResources().getColor(android.R.color.background_light));
-        hw.setText(headword+" "+completeString(pos));
+        hw.setText(headword+" "+completeString(pos)+".");
         hw.setPadding(20,20,20,10);
         verticalParent.addView(hw,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -267,7 +276,7 @@ public class ClipBoardWatcher extends Service {
         verticalParent.addView(definition,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView eg=new TextView(view.getContext());
-        eg.setText("Eg. -> "+example);
+        eg.setText("Eg.: "+example+".");
         eg.setPadding(20,10,20,10);
         eg.setTextColor(getResources().getColor(android.R.color.background_light));
         if(example.length()>0) {
@@ -280,9 +289,9 @@ public class ClipBoardWatcher extends Service {
     char c=pos.charAt(0);
         if(c=='a' || c=='e' || c=='i' || c=='o' || c=='u')
         {
-            return "is an "+pos;
+            return "is an "+pos+".";
         }
-        return "is a "+pos;
+        return "is a "+pos+".";
     }
 
 
